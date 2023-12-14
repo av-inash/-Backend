@@ -13,7 +13,7 @@ dotenv.config({
 connectDB()                        //async task jbb v complete hota hai to promise return krta hai
     .then(() => {
         app.listen(process.env.PORT || 8000, () => {
-            console.log(` Server is running at port ${process.env.PORT}`)
+            console.log(` Server is running at port :${process.env.PORT}`)
         })
     })
     .catch((err) => {
