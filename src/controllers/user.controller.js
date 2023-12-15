@@ -17,7 +17,7 @@ const registerUser =asyncHandler(async(req,res)=>{
     //return res
 
     const{fullName,email,username,password}=req.body
-    console.log("email",email)
+    // console.log("email",email)
     // if(fullName==""){
     //     throw new ApiError(400,"fullName is required")
     // }                                                   aise ek ek kr k field check nhi krna agr jada fiel hai toh
@@ -29,19 +29,24 @@ const registerUser =asyncHandler(async(req,res)=>{
     }
 
 
-   const existedUser= User.findOne({
-        $or:[{usename},{email}]
+   const existedUser= await User.findOne({
+        $or:[{username},{email}]
     })
     if(existedUser){
         throw new ApiError(409,"User with email or username already exists")
     }
 
 
-    const avatarLocalPath=req.files?.avatar[0]?.path;
-    const coverImageLocalPath=req.files?.coverImage[0]?.path;
+    const avatarLocalPath= req.files?.avatar[0]?.path;
+    // const coverImageLocalPath= req.files?.coverImage[0]?.path;
+
+    let coverImageLocalPath;
+    if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0){
+        coverImageLocalPath=req.files.coverImage[0].path
+    }
 
 
-    if(avatarLocalPath){
+    if(!avatarLocalPath){
         throw new ApiError(400,"Avatar file is required")
     }
 
@@ -61,16 +66,16 @@ const registerUser =asyncHandler(async(req,res)=>{
         username:username.toLowerCase()
     })
 
-    const createdUser=await User.findById(user._id).select(
+    const createdUser= await User.findById(user._id).select(
         "-password -refreshToken"        // yaha wo likhna hai jo hme nahi chahiye
 
     )
-    if(createdUser){
+    if(!createdUser){
         throw new ApiError(500,"Something went wrong while registering the user")
     }
 
     return res.status(201).json(
-        new ApiResponse(200,createdUser,"user Registered succesfully")
+        new ApiResponse(200,createdUser,"User Registered succesfully")
     )
 
  

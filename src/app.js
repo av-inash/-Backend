@@ -11,8 +11,8 @@ app.use(cors({
 }))
 
 
-app.use(express.json({limit:"16kb"}))
-app.use(express.urlencoded({extended:true,limit:"16kb"}))   //for handling URL-encoded data in the request body
+app.use(express.json({limit:"1mb"}))
+app.use(express.urlencoded({extended:true,limit:"1mb"}))   //for handling URL-encoded data in the request body
 app.use(express.static("public"))      //serve static files such as HTML, CSS, JavaScript, images, and other assets from a specific directory
 app.use(cookieParser())
 
