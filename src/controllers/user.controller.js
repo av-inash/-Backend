@@ -53,7 +53,8 @@ const registerUser =asyncHandler(async(req,res)=>{
    const existedUser= await User.findOne({
         $or:[{username},{email}]
     })
-    if(existedUser){
+
+    if(!existedUser){
         throw new ApiError(409,"User with email or username already exists")
     }
 
@@ -210,7 +211,7 @@ const refreshAccessToken=asyncHandler(async(req,res)=>{
     return res
     .status(200)
     .cookie("accessToken",accessToken,options)
-    .cookie("refreshToken",refreshToken,options)
+    .cookie("refreshToken",newRefreshToken,options)
     .json(
      new ApiResponse(
          200,
