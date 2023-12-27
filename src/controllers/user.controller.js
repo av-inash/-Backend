@@ -473,4 +473,80 @@ const getWatchHistory = asyncHandler(async (req, res) => {
 })
 
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken, getCurrentUser, updateUserCoverImage, changeCurrentPassword, updateUserAvatar, getUserChannelprofile }
+
+
+
+const generateAndSendOtp = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        throw new ApiError(400, "Email is required");
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        throw new ApiError(404, "User not found with the provided email");
+    }
+
+    // Generate OTP (you can use a library for this)
+    const otp = generateOtp();
+
+    // Save the OTP to the user document
+    user.resetPasswordOtp = otp;
+    await user.save({ validateBeforeSave: false });
+
+    // Send the OTP to the user's email
+    sendOtpToEmail(email, otp);
+
+    return res.status(200).json({
+        success: true,
+        message: "OTP sent successfully. Check your email.",
+    });
+});
+
+// Helper function to generate a random OTP (for illustration purposes)
+function generateOtp() {
+    return Math.floor(1000 + Math.random() * 9000).toString();
+}
+
+
+
+const verifyOtpAndUpdatePassword = asyncHandler(async (req, res) => {
+    const { email, otp, newPassword } = req.body;
+
+    if (!email || !otp || !newPassword) {
+        throw new ApiError(400, "Email, OTP, and new password are required");
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        throw new ApiError(404, "User not found with the provided email");
+    }
+
+    // Check if the OTP matches the stored OTP
+    if (otp !== user.resetPasswordOtp) {
+        throw new ApiError(401, "Invalid OTP");
+    }
+
+    // Reset the OTP in the user document
+    user.resetPasswordOtp = undefined;
+
+    // Update the password
+    user.password = newPassword;
+
+    // Save the updated user document
+    await user.save();
+
+    return res.status(200).json({
+        success: true,
+        message: "Password updated successfully",
+    });
+});
+
+
+
+
+
+export { registerUser, loginUser, updateAccountDetails, getWatchHistory, logoutUser, refreshAccessToken, getCurrentUser, updateUserCoverImage, changeCurrentPassword, updateUserAvatar, getUserChannelprofile, generateAndSendOtp, verifyOtpAndUpdatePassword }

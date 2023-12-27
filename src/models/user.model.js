@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import jwt  from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt"
 
 const userSchema = new Schema(
@@ -48,7 +48,17 @@ const userSchema = new Schema(
         },
         refreshToken: {
             type: String
-        }
+        },
+
+
+
+        resetPasswordOtp: {
+            type: String,
+        },
+
+        resetPasswordOtpCreatedAt: {
+            type: Date,
+        },
 
 
 
@@ -57,7 +67,8 @@ const userSchema = new Schema(
 )
 
 userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
+    if (!this.isModified("password"))
+        return next();
 
 
     this.password = await bcrypt.hash(this.password, 10)
@@ -85,14 +96,14 @@ userSchema.methods.generateAccessToken = function () {
 }
 userSchema.methods.generateRefreshToken = function () {
     return jwt.sign(
-    {
-        _id: this._id,
-      
-    },
-    process.env.REFRESH_TOKEN_SECRET,
-    {
-        expiresIn: process.env.REFRESH_TOKEN_EXPIRY
-    }
+        {
+            _id: this._id,
+
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        {
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+        }
     )
 
 }

@@ -51,5 +51,11 @@ router.route("/c/:username").get(verifyJWT, getUserChannelprofile)
 router.route("/history").get(verifyJWT, getWatchHistory)
 
 
+// New routes for forgot password
+router.route("/forgot-password").post(forgotPassword);
+router.route("/reset-password").post(resetPassword);
+
+
+
 
 export default router;
