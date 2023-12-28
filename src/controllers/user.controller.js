@@ -11,13 +11,13 @@ const generateAccessAndRefereshToken = async (userId) => {
     try {
         const user = await User.findById(userId)
         const accessToken = user.generateAccessToken()
-        const refreshtoken = user.generateRefreshToken()
+        const refreshToken = user.generateRefreshToken()
 
-        user.refreshtoken = refreshtoken
+        user.refreshToken = refreshToken
         await user.save({ validateBeforeSave: false })
 
 
-        return { accessToken, refreshtoken }
+        return { accessToken, refreshToken }
 
 
     } catch {
@@ -75,7 +75,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const avatar = await uploadOnCoudinary(avatarLocalPath)
     const coverImage = await uploadOnCoudinary(coverImageLocalPath)
 
-    if (avatar) {
+    if (!avatar) {
         throw new ApiError(400, "Avatar field is required ")
     }
 
@@ -477,7 +477,12 @@ const getWatchHistory = asyncHandler(async (req, res) => {
 
 
 const generateAndSendOtp = asyncHandler(async (req, res) => {
+
     const { email } = req.body;
+
+    if (!email) {
+        throw new ApiError(400, "Email is required");
+    }
 
     if (!email) {
         throw new ApiError(400, "Email is required");
@@ -527,14 +532,16 @@ const verifyOtpAndUpdatePassword = asyncHandler(async (req, res) => {
 
     // Check if the OTP matches the stored OTP
     if (otp !== user.resetPasswordOtp) {
-        throw new ApiError(401, "Invalid OTP");
+        throw new ApiError(401, "Invalid OTP. Please check and try again.");
     }
 
     // Reset the OTP in the user document
-    user.resetPasswordOtp = undefined;
+
 
     // Update the password
-    user.password = newPassword;
+
+    Object.assign(user, { resetPasswordOtp: undefined, password: newPassword });
+
 
     // Save the updated user document
     await user.save();

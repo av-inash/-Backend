@@ -10,7 +10,12 @@ import {
     registerUser,
     updateAccountDetails,
     updateUserAvatar,
-    updateUserCoverImage
+    updateUserCoverImage,
+    generateAndSendOtp,
+    verifyOtpAndUpdatePassword
+
+
+
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -52,8 +57,8 @@ router.route("/history").get(verifyJWT, getWatchHistory)
 
 
 // New routes for forgot password
-router.route("/forgot-password").post(forgotPassword);
-router.route("/reset-password").post(resetPassword);
+router.route("/forgot-password").post(generateAndSendOtp);
+router.route("/reset-password").post(verifyOtpAndUpdatePassword);
 
 
 
