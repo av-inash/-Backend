@@ -52,17 +52,6 @@ const userSchema = new Schema(
 
 
 
-        resetPasswordOtp: {
-            type: String,
-        },
-
-        resetPasswordOtpCreatedAt: {
-            type: Date,
-        },
-
-
-
-
     }, { timestamps: true }
 )
 

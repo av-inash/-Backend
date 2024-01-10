@@ -11,8 +11,7 @@ import {
     updateAccountDetails,
     updateUserAvatar,
     updateUserCoverImage,
-    generateAndSendOtp,
-    verifyOtpAndUpdatePassword
+
 
 
 
@@ -56,9 +55,6 @@ router.route("/c/:username").get(verifyJWT, getUserChannelprofile)
 router.route("/history").get(verifyJWT, getWatchHistory)
 
 
-// New routes for forgot password
-router.route("/forgot-password").post(generateAndSendOtp);
-router.route("/reset-password").post(verifyOtpAndUpdatePassword);
 
 
 
